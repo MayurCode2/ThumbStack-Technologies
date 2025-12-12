@@ -3,7 +3,12 @@
  * Catches all errors and sends appropriate response
  */
 const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err);
+  // Only log full errors in development
+  if (process.env.NODE_ENV === 'development') {
+    console.error('Error:', err.message);
+  } else {
+    console.error('Error:', err);
+  }
 
   // Default error
   let error = {

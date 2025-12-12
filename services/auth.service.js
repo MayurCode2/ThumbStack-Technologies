@@ -1,11 +1,6 @@
 const User = require('../models/User.model');
 const { generateToken } = require('../middleware/auth.middleware');
 
-/**
- * Register a new user
- * @param {Object} userData - User registration data
- * @returns {Promise<Object>} User data and token
- */
 const registerUser = async (userData) => {
   const { name, email, password } = userData;
 
@@ -33,11 +28,6 @@ const registerUser = async (userData) => {
   };
 };
 
-/**
- * Authenticate user and login
- * @param {Object} credentials - Login credentials
- * @returns {Promise<Object>} User data and token
- */
 const loginUser = async (credentials) => {
   const { email, password } = credentials;
 
@@ -66,11 +56,6 @@ const loginUser = async (credentials) => {
   };
 };
 
-/**
- * Get user by ID
- * @param {String} userId - User ID
- * @returns {Promise<Object>} User data
- */
 const getUserById = async (userId) => {
   const user = await User.findById(userId);
   
@@ -83,12 +68,6 @@ const getUserById = async (userId) => {
   return user.getPublicProfile();
 };
 
-/**
- * Update user profile
- * @param {String} userId - User ID
- * @param {Object} updateData - Data to update
- * @returns {Promise<Object>} Updated user data
- */
 const updateUserProfile = async (userId, updateData) => {
   const { name, email } = updateData;
 

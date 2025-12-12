@@ -1,12 +1,6 @@
 const Book = require('../models/Book.model');
 const { PAGINATION } = require('../utils/constants');
 
-/**
- * Get all books for a user with filters and pagination
- * @param {String} userId - User ID
- * @param {Object} filters - Query filters
- * @returns {Promise<Object>} Books data with pagination
- */
 const getAllUserBooks = async (userId, filters = {}) => {
   const { status, tag, search, page = 1, limit = 10 } = filters;
 
@@ -56,12 +50,6 @@ const getAllUserBooks = async (userId, filters = {}) => {
   };
 };
 
-/**
- * Get a single book by ID
- * @param {String} bookId - Book ID
- * @param {String} userId - User ID
- * @returns {Promise<Object>} Book data
- */
 const getBookById = async (bookId, userId) => {
   const book = await Book.findOne({
     _id: bookId,
@@ -77,12 +65,6 @@ const getBookById = async (bookId, userId) => {
   return book;
 };
 
-/**
- * Create a new book
- * @param {Object} bookData - Book data
- * @param {String} userId - User ID
- * @returns {Promise<Object>} Created book
- */
 const createBook = async (bookData, userId) => {
   const { title, author, tags, status, notes } = bookData;
 
@@ -98,13 +80,6 @@ const createBook = async (bookData, userId) => {
   return book;
 };
 
-/**
- * Update a book
- * @param {String} bookId - Book ID
- * @param {String} userId - User ID
- * @param {Object} updateData - Data to update
- * @returns {Promise<Object>} Updated book
- */
 const updateBook = async (bookId, userId, updateData) => {
   const book = await Book.findOne({
     _id: bookId,
@@ -131,12 +106,6 @@ const updateBook = async (bookId, userId, updateData) => {
   return book;
 };
 
-/**
- * Delete a book
- * @param {String} bookId - Book ID
- * @param {String} userId - User ID
- * @returns {Promise<void>}
- */
 const deleteBook = async (bookId, userId) => {
   const book = await Book.findOne({
     _id: bookId,
@@ -152,11 +121,6 @@ const deleteBook = async (bookId, userId) => {
   await book.deleteOne();
 };
 
-/**
- * Get dashboard statistics for a user
- * @param {String} userId - User ID
- * @returns {Promise<Object>} Dashboard statistics
- */
 const getDashboardStatistics = async (userId) => {
   // Run all queries in parallel for better performance
   const [
@@ -219,11 +183,6 @@ const getDashboardStatistics = async (userId) => {
   };
 };
 
-/**
- * Get all unique tags for a user
- * @param {String} userId - User ID
- * @returns {Promise<Array>} List of tags with counts
- */
 const getUserTags = async (userId) => {
   const tags = await Book.aggregate([
     { $match: { user: userId } },
@@ -238,11 +197,6 @@ const getUserTags = async (userId) => {
   }));
 };
 
-/**
- * Get books count by status for a user
- * @param {String} userId - User ID
- * @returns {Promise<Object>} Status counts
- */
 const getBookCountsByStatus = async (userId) => {
   const [wantToRead, reading, completed] = await Promise.all([
     Book.countDocuments({ user: userId, status: 'want-to-read' }),
