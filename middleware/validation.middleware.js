@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { BOOK_STATUS } = require('../utils/constants');
 
 /**

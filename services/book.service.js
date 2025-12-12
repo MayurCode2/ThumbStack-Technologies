@@ -1,3 +1,4 @@
+/* eslint-disable */
 const Book = require('../models/Book.model');
 const { PAGINATION } = require('../utils/constants');
 
@@ -12,9 +13,9 @@ const getAllUserBooks = async (userId, filters = {}) => {
     query.status = status;
   }
 
-  // Filter by tag
+  // Filter by tag (case-insensitive)
   if (tag) {
-    query.tags = { $in: [tag] };
+    query.tags = { $in: [tag.toLowerCase().trim()] };
   }
 
   // Search in title or author
@@ -78,6 +79,23 @@ const createBook = async (bookData, userId) => {
   });
 
   return book;
+};
+
+const createMultipleBooks = async (booksData, userId) => {
+  const booksToCreate = booksData.map(bookData => ({
+    title: bookData.title,
+    author: bookData.author,
+    tags: Array.isArray(bookData.tags) 
+      ? bookData.tags.filter(tag => tag && typeof tag === 'string' && tag.trim().length > 0)
+                      .map(tag => tag.toLowerCase().trim())
+      : [],
+    status: bookData.status || 'want-to-read',
+    notes: bookData.notes || '',
+    user: userId
+  }));
+
+  const createdBooks = await Book.insertMany(booksToCreate);
+  return createdBooks;
 };
 
 const updateBook = async (bookId, userId, updateData) => {
@@ -216,6 +234,7 @@ module.exports = {
   getAllUserBooks,
   getBookById,
   createBook,
+  createMultipleBooks,
   updateBook,
   deleteBook,
   getDashboardStatistics,

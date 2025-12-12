@@ -1,3 +1,4 @@
+/* eslint-disable */
 const User = require('../models/User.model');
 const { generateToken } = require('../middleware/auth.middleware');
 

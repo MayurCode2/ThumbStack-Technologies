@@ -1,5 +1,43 @@
 const bookService = require('../services/book.service');
 
+// @desc    Create multiple books at once
+// @route   POST /api/books/bulk
+// @access  Private
+const createMultipleBooks = async (req, res, next) => {
+  try {
+    const { books } = req.body;
+
+    // Validate that books is an array
+    if (!Array.isArray(books) || books.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide an array of books'
+      });
+    }
+
+    // Validate each book has required fields
+    for (let i = 0; i < books.length; i++) {
+      if (!books[i].title || !books[i].author) {
+        return res.status(400).json({
+          success: false,
+          message: `Book at index ${i} is missing required fields (title or author)`
+        });
+      }
+    }
+
+    const createdBooks = await bookService.createMultipleBooks(books, req.user._id);
+
+    res.status(201).json({
+      success: true,
+      message: `${createdBooks.length} books added successfully`,
+      count: createdBooks.length,
+      data: createdBooks
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get all books for logged in user
 // @route   GET /api/books
 // @access  Private
@@ -151,6 +189,7 @@ module.exports = {
   getAllBooks,
   getBookById,
   createBook,
+  createMultipleBooks,
   updateBook,
   deleteBook,
   getDashboardStats,

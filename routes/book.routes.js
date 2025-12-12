@@ -4,6 +4,7 @@ const {
   getAllBooks,
   getBookById,
   createBook,
+  createMultipleBooks,
   updateBook,
   deleteBook,
   getDashboardStats,
@@ -22,6 +23,9 @@ router.use(protect);
 // Dashboard and stats routes (must be before /:id route)
 router.get('/dashboard/stats', getDashboardStats);
 router.get('/tags', getAllTags);
+
+// Bulk create route (must be before /:id route)
+router.post('/bulk', createMultipleBooks);
 
 // CRUD routes
 router.route('/')

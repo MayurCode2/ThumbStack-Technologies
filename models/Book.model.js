@@ -79,9 +79,13 @@ bookSchema.virtual('statusEmoji').get(function() {
 
 // Pre-save middleware to sanitize tags
 bookSchema.pre('save', function(next) {
-  if (this.isModified('tags')) {
-    // Remove duplicates and empty strings
-    this.tags = [...new Set(this.tags.filter(tag => tag && tag.trim().length > 0))];
+  if (this.isModified('tags') && Array.isArray(this.tags)) {
+    // Clean, lowercase, trim, and remove duplicates
+    this.tags = [...new Set(
+      this.tags
+        .filter(tag => tag && typeof tag === 'string' && tag.trim().length > 0)
+        .map(tag => tag.toLowerCase().trim())
+    )];
   }
   next();
 });
