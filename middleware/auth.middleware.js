@@ -67,8 +67,19 @@ exports.protect = async (req, res, next) => {
 
 // Generate JWT token
 exports.generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE || '30d'
+  const expiresIn = process.env.JWT_EXPIRE || '30d';
+  console.log('🔑 [TOKEN] Generating token with expiration:', expiresIn);
+  
+  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: expiresIn
   });
+  
+  // Decode to check expiration time
+  const decoded = jwt.decode(token);
+  const expirationDate = new Date(decoded.exp * 1000);
+  console.log('⏰ [TOKEN] Token will expire at:', expirationDate.toISOString());
+  console.log('⏳ [TOKEN] Time until expiration:', Math.floor((decoded.exp * 1000 - Date.now()) / 1000 / 60), 'minutes');
+  
+  return token;
 };
 
