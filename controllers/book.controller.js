@@ -43,6 +43,10 @@ const createMultipleBooks = async (req, res, next) => {
 // @access  Private
 const getAllBooks = async (req, res, next) => {
   try {
+    console.log('📚 [BOOKS] Get all books request');
+    console.log('👤 [BOOKS] User ID:', req.user._id);
+    console.log('📧 [BOOKS] User Email:', req.user.email);
+    
     const filters = {
       status: req.query.status,
       tag: req.query.tag,
@@ -50,8 +54,10 @@ const getAllBooks = async (req, res, next) => {
       page: req.query.page,
       limit: req.query.limit
     };
+    console.log('🔍 [BOOKS] Filters:', JSON.stringify(filters, null, 2));
 
     const result = await bookService.getAllUserBooks(req.user._id, filters);
+    console.log('✅ [BOOKS] Found', result.books.length, 'books (Total:', result.pagination.total + ')');
 
     res.status(200).json({
       success: true,
@@ -62,6 +68,7 @@ const getAllBooks = async (req, res, next) => {
       data: result.books
     });
   } catch (error) {
+    console.error('❌ [BOOKS] Failed to get books:', error.message);
     next(error);
   }
 };
@@ -87,10 +94,15 @@ const getBookById = async (req, res, next) => {
 // @access  Private
 const createBook = async (req, res, next) => {
   try {
+    console.log('➕ [BOOKS] Create book request');
+    console.log('👤 [BOOKS] User:', req.user.email);
     const { title, author, tags, status, notes } = req.body;
+    console.log('📖 [BOOKS] Title:', title);
+    console.log('✍️ [BOOKS] Author:', author);
 
     // Validate required fields
     if (!title || !author) {
+      console.log('❌ [BOOKS] Missing required fields');
       return res.status(400).json({
         success: false,
         message: 'Please provide title and author'
@@ -101,6 +113,7 @@ const createBook = async (req, res, next) => {
       { title, author, tags, status, notes },
       req.user._id
     );
+    console.log('✅ [BOOKS] Book created with ID:', book._id);
 
     res.status(201).json({
       success: true,
@@ -108,6 +121,7 @@ const createBook = async (req, res, next) => {
       data: book
     });
   } catch (error) {
+    console.error('❌ [BOOKS] Failed to create book:', error.message);
     next(error);
   }
 };

@@ -13,6 +13,7 @@ const getAllUserBooks = async (userId, filters = {}) => {
     query.status = status;
   }
 
+
   // Filter by tag (case-insensitive)
   if (tag) {
     query.tags = { $in: [tag.toLowerCase().trim()] };

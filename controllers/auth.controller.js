@@ -5,10 +5,14 @@ const authService = require('../services/auth.service');
 // @access  Public
 const signup = async (req, res, next) => {
   try {
+    console.log('📝 [SIGNUP] New user registration attempt');
     const { name, email, password } = req.body;
+    console.log('📧 [SIGNUP] Email:', email);
+    console.log('👤 [SIGNUP] Name:', name);
 
     // Validate input
     if (!name || !email || !password) {
+      console.log('❌ [SIGNUP] Missing required fields');
       return res.status(400).json({
         success: false,
         message: 'Please provide name, email, and password'
@@ -16,7 +20,9 @@ const signup = async (req, res, next) => {
     }
 
     // Call service
+    console.log('🔍 [SIGNUP] Creating user account...');
     const result = await authService.registerUser({ name, email, password });
+    console.log('✅ [SIGNUP] User created successfully:', email);
 
     res.status(201).json({
       success: true,
@@ -24,6 +30,7 @@ const signup = async (req, res, next) => {
       data: result
     });
   } catch (error) {
+    console.error('❌ [SIGNUP] Registration failed:', error.message);
     next(error);
   }
 };
@@ -33,10 +40,13 @@ const signup = async (req, res, next) => {
 // @access  Public
 const login = async (req, res, next) => {
   try {
+    console.log('🔑 [LOGIN] Login attempt');
     const { email, password } = req.body;
+    console.log('📧 [LOGIN] Email:', email);
 
     // Validate input
     if (!email || !password) {
+      console.log('❌ [LOGIN] Missing credentials');
       return res.status(400).json({
         success: false,
         message: 'Please provide email and password'
@@ -44,7 +54,9 @@ const login = async (req, res, next) => {
     }
 
     // Call service
+    console.log('🔍 [LOGIN] Authenticating user...');
     const result = await authService.loginUser({ email, password });
+    console.log('✅ [LOGIN] Login successful for:', email);
 
     res.status(200).json({
       success: true,
@@ -52,6 +64,7 @@ const login = async (req, res, next) => {
       data: result
     });
   } catch (error) {
+    console.error('❌ [LOGIN] Login failed:', error.message);
     next(error);
   }
 };

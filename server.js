@@ -55,8 +55,13 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+  console.log('='.repeat(50));
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🕐 Started at: ${new Date().toISOString()}`);
+  console.log(`🔐 JWT Secret configured: ${process.env.JWT_SECRET ? 'Yes' : 'No'}`);
+  console.log(`💾 MongoDB URI configured: ${process.env.MONGO_URI ? 'Yes' : 'No'}`);
+  console.log('='.repeat(50));
 });
 
 module.exports = app;
