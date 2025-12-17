@@ -47,92 +47,9 @@ const bookSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  versionKey: false
 });
 
-// Compound indexes for better query performance
-bookSchema.index({ user: 1, status: 1 });
-bookSchema.index({ user: 1, tags: 1 });
-bookSchema.index({ user: 1, createdAt: -1 });
-bookSchema.index({ user: 1, author: 1 });
-
-// Virtual field for status display
-bookSchema.virtual('statusDisplay').get(function() {
-  const statusMap = {
-    'want-to-read': 'Want to Read',
-    'reading': 'Reading',
-    'completed': 'Completed'
-  };
-  return statusMap[this.status];
-});
-
-// Virtual field for status emoji
-bookSchema.virtual('statusEmoji').get(function() {
-  const emojiMap = {
-    'want-to-read': '📖',
-    'reading': '📘',
-    'completed': '✅'
-  };
-  return emojiMap[this.status];
-});
-
-// Pre-save middleware to sanitize tags
-bookSchema.pre('save', function(next) {
-  if (this.isModified('tags') && Array.isArray(this.tags)) {
-    // Clean, lowercase, trim, and remove duplicates
-    this.tags = [...new Set(
-      this.tags
-        .filter(tag => tag && typeof tag === 'string' && tag.trim().length > 0)
-        .map(tag => tag.toLowerCase().trim())
-    )];
-  }
-  next();
-});
-
-// Method to format book for JSON response
-bookSchema.methods.toJSON = function() {
-  const book = this.toObject();
-  
-  // Remove version key
-  delete book.__v;
-  
-  return book;
-};
-
-// Instance method to check if book is completed
-bookSchema.methods.isCompleted = function() {
-  return this.status === 'completed';
-};
-
-// Instance method to update status
-bookSchema.methods.updateStatus = async function(newStatus) {
-  this.status = newStatus;
-  return await this.save();
-};
-
-// Static method to find books by status
-bookSchema.statics.findByStatus = function(userId, status) {
-  return this.find({ user: userId, status });
-};
-
-// Static method to find books by tag
-bookSchema.statics.findByTag = function(userId, tag) {
-  return this.find({ user: userId, tags: tag });
-};
-
-// Static method to find books by author
-bookSchema.statics.findByAuthor = function(userId, author) {
-  return this.find({ 
-    user: userId, 
-    author: { $regex: author, $options: 'i' } 
-  });
-};
-
-// Static method to get book count by status
-bookSchema.statics.getStatusCount = async function(userId, status) {
-  return await this.countDocuments({ user: userId, status });
-};
 
 module.exports = mongoose.model('Book', bookSchema);
 

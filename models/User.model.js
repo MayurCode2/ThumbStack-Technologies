@@ -32,17 +32,7 @@ const userSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
-
-// Index is already defined in the schema field
-
-// Virtual field for user's books (populate when needed)
-userSchema.virtual('books', {
-  ref: 'Book',
-  localField: '_id',
-  foreignField: 'user'
+  versionKey: false
 });
 
 // Hash password before saving
@@ -55,14 +45,6 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
-
-// Remove password from JSON output
-userSchema.methods.toJSON = function() {
-  const user = this.toObject();
-  delete user.password;
-  delete user.__v;
-  return user;
-};
 
 // Method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
@@ -78,17 +60,6 @@ userSchema.methods.getPublicProfile = function() {
     createdAt: this.createdAt,
     updatedAt: this.updatedAt
   };
-};
-
-// Static method to find user by email
-userSchema.statics.findByEmail = function(email) {
-  return this.findOne({ email: email.toLowerCase() });
-};
-
-// Static method to check if email exists
-userSchema.statics.emailExists = async function(email) {
-  const user = await this.findOne({ email: email.toLowerCase() });
-  return !!user;
 };
 
 module.exports = mongoose.model('User', userSchema);
